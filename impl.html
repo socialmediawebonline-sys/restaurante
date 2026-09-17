@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú Interactivo Fast Food - Brasas y Barril</title>
+  <style>
+    :root {
+      --bg-dark: #08090c;
+      --card-bg: #11141c;
+      --border-color: #232838;
+      --primary-orange: #ff8c00;
+      --accent-yellow: #ffd700;
+      --accent-green: #25d366;
+      --text-white: #ffffff;
+      --text-gray: #a0aab8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      padding: 15px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-bottom: 220px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 20px 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--primary-orange);
+      background: radial-gradient(circle at top, rgba(255, 140, 0, 0.15), transparent 70%);
+      border-radius: 0 0 15px 15px;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 900;
+    }
+
+    .header h1 span {
+      color: var(--primary-orange);
+      text-shadow: 0 0 12px rgba(255, 140, 0, 0.4);
+    }
+
+    .header p {
+      color: var(--accent-yellow);
+      font-size: 0.95rem;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    /* Grid Layout */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    /* Tarjeta de Producto */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      border-color: var(--primary-orange);
+    }
+
+    .card-img-container {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+    }
+
+    .card-img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .card-img-container img {
+      transform: scale(1.05);
+    }
+
+    .card-tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(8, 9, 12, 0.85);
+      border: 1px solid var(--primary-orange);
+      color: var(--accent-yellow);
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(4px);
+    }
+
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-white);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-gray);
+      line-height: 1.4;
+      margin-bottom: 14px;
+    }
+
+    /* Acordeón */
+    .accordion-btn {
+      width: 100%;
+      background: #171b26;
+      border: 1px solid var(--border-color);
+      color: var(--primary-orange);
+      padding: 10px 14px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .accordion-btn:hover {
+      background: #1e2333;
+      border-color: var(--primary-orange);
+    }
+
+    .accordion-arrow {
+      color: var(--accent-yellow);
+      transition: transform 0.3s ease;
+    }
+
+    .card.active .accordion-arrow {
+      transform: rotate(180deg);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s ease;
+      background-color: #0b0d14;
+      border-radius: 8px;
+      margin-top: 6px;
+    }
+
+    .card.active .accordion-content {
+      max-height: 400px;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Opciones de Subproductos */
+    .subproduct-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      background: #12151f;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .subproduct-option:last-child {
+      margin-bottom: 0;
+    }
+
+    .sub-info {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .sub-name {
+      font-size: 0.85rem;
+      color: var(--text-white);
+      font-weight: 500;
+    }
+
+    .sub-price {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--accent-yellow);
+    }
+
+    /* Controles + / - */
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #08090c;
+      border: 1px solid var(--border-color);
+      padding: 3px 6px;
+      border-radius: 6px;
+    }
+
+    .qty-btn {
+      background: #1e2333;
+      color: var(--primary-orange);
+      border: 1px solid var(--border-color);
+      width: 26px;
+      height: 26px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .qty-btn:hover {
+      background: var(--primary-orange);
+      color: #000;
+    }
+
+    .qty-display {
+      width: 20px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    /* Summary Bar */
+    .summary-bar {
+      position: fixed;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 30px);
+      max-width: 950px;
+      background: rgba(17, 20, 28, 0.95);
+      border: 2px solid var(--primary-orange);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .options-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Selector de Mesa */
+    .table-option {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: #171b26;
+      border: 1px solid var(--border-color);
+      padding: 6px 10px;
+      border-radius: 10px;
+      transition: opacity 0.3s ease;
+    }
+
+    .table-option label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent-yellow);
+      text-transform: uppercase;
+    }
+
+    .table-select {
+      background: #08090c;
+      color: var(--text-white);
+      border: 1px solid var(--primary-orange);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Checkbox y Campo de Domicilio */
+    .delivery-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .delivery-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #171b26;
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.2s;
+    }
+
+    .delivery-option:hover {
+      border-color: var(--primary-orange);
+    }
+
+    .delivery-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary-orange);
+      cursor: pointer;
+    }
+
+    .delivery-option label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-white);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .delivery-option label span {
+      font-size: 0.7rem;
+      color: var(--accent-yellow);
+      font-weight: 400;
+    }
+
+    .address-input {
+      display: none;
+      background: #08090c;
+      border: 1px solid var(--primary-orange);
+      color: var(--text-white);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      outline: none;
+      width: 100%;
+    }
+
+    .address-input::placeholder {
+      color: #6c757d;
+    }
+
+    .total-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .total-title {
+      font-size: 0.75rem;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .total-amount {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--accent-yellow);
+    }
+
+    .btn-delivery {
+      background: linear-gradient(135deg, var(--primary-orange), #e67e00);
+      color: #000;
+      border: none;
+      padding: 12px 18px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border-radius: 10px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-align: center;
+    }
+
+    .btn-delivery:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 16px rgba(255, 140, 0, 0.5);
+    }
+
+    /* Modal de Confirmación */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 15px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .receipt-card {
+      background: #11141c;
+      border: 2px solid var(--primary-orange);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      padding: 24px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.9);
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .receipt-card {
+      transform: translateY(0);
+    }
+
+    .receipt-header {
+      text-align: center;
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+
+    .receipt-header h2 {
+      color: var(--primary-orange);
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .receipt-header p {
+      color: var(--text-gray);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .badge-location {
+      display: inline-block;
+      margin-top: 10px;
+      background: rgba(255, 140, 0, 0.15);
+      border: 1px solid var(--primary-orange);
+      color: var(--accent-yellow);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      word-break: break-word;
+    }
+
+    .receipt-body {
+      max-height: 240px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      padding-right: 5px;
+    }
+
+    .receipt-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      border-bottom: 1px rgba(255, 255, 255, 0.05) solid;
+      padding-bottom: 6px;
+    }
+
+    .receipt-item:last-child {
+      border-bottom: none;
+    }
+
+    .receipt-item-title {
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    .receipt-item-qty {
+      color: var(--primary-orange);
+      font-weight: 700;
+    }
+
+    .receipt-item-price {
+      font-weight: 700;
+      color: var(--accent-yellow);
+    }
+
+    .receipt-footer {
+      border-top: 1px dashed var(--border-color);
+      padding-top: 15px;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      color: var(--text-gray);
+    }
+
+    .receipt-row.total {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--accent-yellow);
+      margin-top: 8px;
+    }
+
+    .btn-close-modal {
+      width: 100%;
+      background: var(--primary-orange);
+      color: #000;
+      border: none;
+      padding: 12px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      margin-top: 15px;
+      transition: background 0.2s;
+    }
+
+    .btn-close-modal:hover {
+      background: #e67e00;
+    }
+
+    @media (max-width: 768px) {
+      .summary-bar {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 10px;
+      }
+      .options-group {
+        justify-content: space-between;
+      }
+      .delivery-container {
+        width: 100%;
+      }
+      .delivery-option {
+        justify-content: center;
+      }
+      .total-info {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .btn-delivery {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>BRASAS & <span>BARRIL</span></h1>
+    <p>Selecciona tus productos y envía tu pedido directo a cocina</p>
+  </div>
+
+  <div class="menu-grid">
+
+    <!-- 1. Sandwich -->
+    <div class="card">
+      <div class="card-img-container">
+        <img src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=600&q=80" alt="Sandwich Gourmet">
+        <span class="card-tag">Sandwiches</span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">1. Sándwich Club House</h3>
+        <p class="card-desc">Pan baguette artesanal, pechuga a la plancha, jamón, queso, tocineta crujiente, vegetales frescos y salsa tártara.</p>
+        
+        <button class="accordion-btn" onclick="toggleCard(this)">
+          <span>Ver Opciones y Cantidades</span>
+          <span class="accordion-arrow">&#9660;</span>
+        </button>
+        <div class="accordion-content">
+          <div class="subproduct-option">
+            <div class="sub-info">
+              <span class="sub-name">Mediano (Pechuga + Queso)</span>
+              <span class="sub-price">$ 14.000</span>
+            </div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQty('item-1-1', -1)">-</button>
+              <span class="qty-display" id="item-1-1" data-name="Sándwich Mediano" data-price="14000">0</span>
+              <button class="qty-btn" onclick="updateQty('item-1-1', 1)">+</button>
+            </div>
+          </div>
+          <div class="subproduct-option">
+            <div class="sub-info">
+              <span class="sub-name">Especial (Doble Carne + Tocineta)</span>
+              <span class="sub-price">$ 20.000</span>
+            </div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQty('item-1-2', -1)">-</button>
+              <span class="qty-display" id="item-1-2" data-name="Sándwich Club House Especial" data-price="20000">0</span>
+              <button class="qty-btn" onclick="updateQty('item-1-2', 1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Asados -->
+    <div class="card">
+      <div class="card-img-container">
+        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80" alt="Parrillada Asados">
+        <span class="card-tag">Asados</span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">2. Asados a la Parrilla</h3>
+        <p class="card-desc">Cortes jugosos asados al carbón con chimichurri casero, guacamole, papa salada y queso costeño.</p>
+        
+        <button class="accordion-btn" onclick="toggleCard(this)">
+          <span>Ver Cortes y Cantidades</span>
+          <span class="accordion-arrow">&#9660;</span>
+        </button>
+        <div class="accordion-content">
+          <div class="subproduct-option">
+            <div class="sub-info">
+              <span class="sub-name">Lomo de Res Asado (250g)</span>
+              <span class="sub-price">$ 26.000</span>
+            </div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQty('item-2-1', -1)">-</button>
+              <span class="qty-display" id="item-2-1" data-name="Lomo de Res Asado" data-price="26000">0</span>
+              <button class="qty-btn" onclick="updateQty('item-2-1', 1)">+</button>
+            </div>
+          </div>
+          <div class="subproduct-option">
+            <div class="sub-info">
+              <span class="sub-name">Parrillada Mixta (Para 2)</span>
+              <span class="sub-price">$ 48.000</span>
+            </div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQty('item-2-2', -1)">-</button>
+              <span class="qty-display" id="item-2-2" data-name="Parrillada Mixta" data-price="48000">0</span>
+              <button class="qty-btn" onclick="updateQty('item-2-2', 1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Hamburguesas -->
+    <div class="card">
+      <div class="card-img-container">
+        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80" alt="Hamburguesa Artesanal">
+        <span class="card-tag">Hamburguesas</span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">3. Hamburguesa Artesanal</h3>
+        <p class="card-desc">Carne 100% de res, queso cheddar, tocineta ahumada, vegetal fresco y salsa especial en suave pan brioche.</p>
+        
+        <button class="accordion-btn" onclick="toggleCard(this)">
+          <span>Ver Presentaciones y Cantidades</span>
+          <span class="accordion-arrow">&#9660;</span>
+        </button>
+        <div class="accordion-content">
+          <div class="subproduct-option">
+            <div class="sub-info">
+              <span class="sub-name">Sencilla (150g Carne)</span>
+              <span class="sub-price">$ 15.000</span>
+            </div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQty('item-3-1', -1)">-</button>
+              <span class="qty-display" id="item-3-1" data-name="Hamburguesa Sencilla" data-price="15000">0</span>
+              <button class="qty-btn" onclick="updateQty('item-3-1', 1)">+</button>
+            </div>
+          </div>
+          <div class="subproduct-option">
+            <div class="sub-info">
+              <span class="sub-name">Doble Carne (300g Carne)</span>
+              <span class="sub-price">$ 22.000</span>
+            </div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQty('item-3-2', -1)">-</button>
+              <span class="qty-display" id="item-3-2" data-name="Hamburguesa Doble Carne" data-price="22000">0</span>
+              <button class="qty-btn" onclick="updateQty('item-3-2', 1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Bebidas -->
+    <div class="card">
+      <div class="card-img-container">
+        <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=80" alt="Bebidas y Jugos">
+        <span class="card-tag">Bebidas</span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">4. Bebidas & Refrescos</h3>
+        <p class="card-desc">Refresca tu pedido con bebidas heladas, gaseosas o jugos naturales.</p>
+        
+        <button class="accordion-btn" onclick="toggleCard(this)">
+          <span>Ver Opciones y Cantidades</span>
+          <span class="accordion-arrow">&#9660;</span>
+        </button>
+        <div class="accordion-content">
+          <div class="subproduct-option">
+            <div class="sub-info">
+              <span class="sub-name">Gaseosa Personal (400ml)</span>
+              <span class="sub-price">$ 5.000</span>
+            </div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQty('item-4-1', -1)">-</button>
+              <span class="qty-display" id="item-4-1" data-name="Gaseosa Personal 400ml" data-price="5000">0</span>
+              <button class="qty-btn" onclick="updateQty('item-4-1', 1)">+</button>
+            </div>
+          </div>
+          <div class="subproduct-option">
+            <div class="sub-info">
+              <span class="sub-name">Jugo Natural en Leche</span>
+              <span class="sub-price">$ 8.000</span>
+            </div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQty('item-4-2', -1)">-</button>
+              <span class="qty-display" id="item-4-2" data-name="Jugo Natural en Leche" data-price="8000">0</span>
+              <button class="qty-btn" onclick="updateQty('item-4-2', 1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Summary Bar Flotante -->
+  <div class="summary-bar">
+    <div class="options-group">
+      <!-- Selector de Mesa -->
+      <div class="table-option" id="tableContainer">
+        <label for="tableSelect">N° de Mesa</label>
+        <select id="tableSelect" class="table-select">
+          <option value="Mesa 1">Mesa 1</option>
+          <option value="Mesa 2">Mesa 2</option>
+          <option value="Mesa 3">Mesa 3</option>
+          <option value="Mesa 4">Mesa 4</option>
+          <option value="Mesa 5">Mesa 5</option>
+        </select>
+      </div>
+
+      <!-- Checkbox y Campo de Domicilio -->
+      <div class="delivery-container">
+        <div class="delivery-option">
+          <input type="checkbox" id="deliveryCheck" onchange="toggleDeliveryMode()">
+          <label for="deliveryCheck">
+            Servicio a Domicilio
+            <span>+$ 4.000 COP</span>
+          </label>
+        </div>
+        <input type="text" id="deliveryAddress" class="address-input" placeholder="Dirección y teléfono de entrega..." />
+      </div>
+    </div>
+
+    <div class="total-info">
+      <span class="total-title">Total a Pagar</span>
+      <span class="total-amount" id="totalAmount">$ 0</span>
+    </div>
+
+    <button class="btn-delivery" onclick="sendOrder()">
+      <span>Finalizar y Enviar Pedido</span>
+    </button>
+  </div>
+
+  <!-- Modal Tarjeta de Confirmación -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="receipt-card">
+      <div class="receipt-header">
+        <h2>¡Pedido Confirmado!</h2>
+        <p>Gracias por tu compra en Brasas y Barril</p>
+        <div class="badge-location" id="receiptLocation">Mesa 1</div>
+      </div>
+      
+      <div class="receipt-body" id="receiptItems"></div>
+
+      <div class="receipt-footer">
+        <div class="receipt-row">
+          <span>Subtotal Productos:</span>
+          <span id="receiptSubtotal">$ 0</span>
+        </div>
+        <div class="receipt-row" id="deliveryRow" style="display: none;">
+          <span>Costo de Domicilio:</span>
+          <span>$ 4.000</span>
+        </div>
+        <div class="receipt-row total">
+          <span>Total a Pagar:</span>
+          <span id="receiptTotal">$ 0</span>
+        </div>
+        <button class="btn-close-modal" onclick="acceptAndReset()">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // CONFIGURACIÓN DE APIS
+    const DELIVERY_FEE = 4000;
+    
+    // Telegram Bot Settings (@Brasasybarril_Bot)
+    const TELEGRAM_BOT_TOKEN = "PEGA_AQUI_EL_TOKEN_DE_BOTFATHER"; 
+    const TELEGRAM_CHAT_ID = "PEGA_AQUI_TU_CHAT_ID";
+
+    // Firebase Database Settings
+    const FIREBASE_DB_URL = "https://TU_PROYECTO_DEFAULT_RTDB.firebaseio.com";
+
+    function toggleCard(btn) {
+      const card = btn.closest('.card');
+      card.classList.toggle('active');
+    }
+
+    function updateQty(id, delta) {
+      const element = document.getElementById(id);
+      let currentQty = parseInt(element.innerText);
+      let newQty = currentQty + delta;
+      
+      if (newQty >= 0) {
+        element.innerText = newQty;
+        calculateTotal();
+      }
+    }
+
+    function toggleDeliveryMode() {
+      const isDelivery = document.getElementById('deliveryCheck').checked;
+      const tableContainer = document.getElementById('tableContainer');
+      const tableSelect = document.getElementById('tableSelect');
+      const addressInput = document.getElementById('deliveryAddress');
+
+      if (isDelivery) {
+        tableContainer.style.opacity = '0.4';
+        tableSelect.disabled = true;
+        addressInput.style.display = 'block';
+      } else {
+        tableContainer.style.opacity = '1';
+        tableSelect.disabled = false;
+        addressInput.style.display = 'none';
+        addressInput.value = '';
+      }
+
+      calculateTotal();
+    }
+
+    function calculateTotal() {
+      let total = 0;
+      const displays = document.querySelectorAll('.qty-display');
+      
+      displays.forEach(el => {
+        const qty = parseInt(el.innerText);
+        const price = parseInt(el.getAttribute('data-price'));
+        total += qty * price;
+      });
+
+      const isDelivery = document.getElementById('deliveryCheck').checked;
+      if (isDelivery && total > 0) {
+        total += DELIVERY_FEE;
+      }
+
+      document.getElementById('totalAmount').innerText = '$ ' + total.toLocaleString('es-CO');
+    }
+
+    async function sendOrder() {
+      let orderList = [];
+      let subtotal = 0;
+      const displays = document.querySelectorAll('.qty-display');
+
+      displays.forEach(el => {
+        const qty = parseInt(el.innerText);
+        if (qty > 0) {
+          const name = el.getAttribute('data-name');
+          const price = parseInt(el.getAttribute('data-price'));
+          const itemTotal = qty * price;
+          subtotal += itemTotal;
+          orderList.push({ name, qty, price, itemTotal });
+        }
+      });
+
+      if (orderList.length === 0) {
+        alert("Por favor selecciona la cantidad de al menos un producto antes de enviar el pedido.");
+        return;
+      }
+
+      const isDelivery = document.getElementById('deliveryCheck').checked;
+      const addressVal = document.getElementById('deliveryAddress').value.trim();
+
+      if (isDelivery && addressVal === '') {
+        alert("Por favor ingresa tu dirección y teléfono para la entrega.");
+        document.getElementById('deliveryAddress').focus();
+        return;
+      }
+
+      let grandTotal = subtotal;
+      let deliveryFee = isDelivery ? DELIVERY_FEE : 0;
+      if (isDelivery) grandTotal += DELIVERY_FEE;
+
+      const locationText = isDelivery 
+        ? '🛵 Domicilio: ' + addressVal 
+        : '📍 ' + document.getElementById('tableSelect').value;
+
+      const orderPayload = {
+        timestamp: new Date().toISOString(),
+        isDelivery: isDelivery,
+        location: isDelivery ? addressVal : document.getElementById('tableSelect').value,
+        items: orderList,
+        subtotal: subtotal,
+        deliveryFee: deliveryFee,
+        grandTotal: grandTotal,
+        status: "Pendiente"
+      };
+
+      // 1. Guardar en Firebase Realtime Database
+      try {
+        fetch(`${FIREBASE_DB_URL}/pedidos.json`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderPayload)
+        });
+      } catch (e) {
+        console.error("Error Firebase:", e);
+      }
+
+      // 2. Notificar vía Telegram (@Brasasybarril_Bot)
+      const itemsFormatted = orderList.map(item => `• *${item.qty}x* ${item.name} ($ ${item.itemTotal.toLocaleString('es-CO')})`).join('\n');
+      const telegramMessage = `🔥 *NUEVO PEDIDO - BRASAS Y BARRIL* 🔥\n\n` +
+        `📍 *Ubicación:* ${locationText}\n\n` +
+        `🛒 *Productos:*\n${itemsFormatted}\n\n` +
+        `💵 *Subtotal:* $ ${subtotal.toLocaleString('es-CO')}\n` +
+        (isDelivery ? `🛵 *Domicilio:* $ ${DELIVERY_FEE.toLocaleString('es-CO')}\n` : '') +
+        `💰 *TOTAL A PAGAR:* $ ${grandTotal.toLocaleString('es-CO')}`;
+
+      try {
+        fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: telegramMessage,
+            parse_mode: 'Markdown'
+          })
+        });
+      } catch (e) {
+        console.error("Error Telegram:", e);
+      }
+
+      // Renderizar Modal en pantalla
+      const receiptItemsContainer = document.getElementById('receiptItems');
+      receiptItemsContainer.innerHTML = '';
+
+      orderList.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'receipt-item';
+        itemDiv.innerHTML = `
+          <div>
+            <div class="receipt-item-title">${item.name}</div>
+            <div class="receipt-item-qty">Cantidad: ${item.qty}</div>
+          </div>
+          <div class="receipt-item-price">$ ${item.itemTotal.toLocaleString('es-CO')}</div>
+        `;
+        receiptItemsContainer.appendChild(itemDiv);
+      });
+
+      document.getElementById('receiptSubtotal').innerText = '$ ' + subtotal.toLocaleString('es-CO');
+      document.getElementById('receiptLocation').innerText = locationText;
+      document.getElementById('deliveryRow').style.display = isDelivery ? 'flex' : 'none';
+      document.getElementById('receiptTotal').innerText = '$ ' + grandTotal.toLocaleString('es-CO');
+
+      document.getElementById('orderModal').classList.add('active');
+    }
+
+    function acceptAndReset() {
+      document.getElementById('orderModal').classList.remove('active');
+
+      const displays = document.querySelectorAll('.qty-display');
+      displays.forEach(el => { el.innerText = '0'; });
+
+      const deliveryCheck = document.getElementById('deliveryCheck');
+      deliveryCheck.checked = false;
+      toggleDeliveryMode();
+
+      document.getElementById('tableSelect').selectedIndex = 0;
+
+      const activeCards = document.querySelectorAll('.card.active');
+      activeCards.forEach(card => card.classList.remove('active'));
+
+      calculateTotal();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>
